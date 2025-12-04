@@ -1,31 +1,52 @@
-const apiKey = "YOUR_API_KEY";
+body {
+    font-family: Arial, sans-serif;
+    background: #a8d8ff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-function getWeather() {
-    const city = document.getElementById("cityInput").value.trim();
-    
-    if (city === "") {
-        alert("Please enter a city name!");
-        return;
-    }
+.container {
+    width: 350px;
+    background: #ffffff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
 
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
-    .then(response => response.json())
-    .then(data => {
-        if(data.cod === 404) {
-            document.getElementById("weatherResult").innerHTML = `<p>City not found!</p>`;
-            return;
-        }
+input {
+    width: 75%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+}
 
-        const weatherHTML = `
-            <p><strong>${data.name}, ${data.sys.country}</strong></p>
-            <p class="temp">${data.main.temp}°C</p>
-            <p>${data.weather[0].main} - ${data.weather[0].description}</p>
-            <p>Humidity: ${data.main.humidity}%</p>
-            <p>Wind: ${data.wind.speed} m/s</p>
-        `;
-        document.getElementById("weatherResult").innerHTML = weatherHTML;
-    })
-    .catch(err => {
-        document.getElementById("weatherResult").innerHTML = `<p>Error fetching data</p>`;
-    });
+button {
+    padding: 10px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.forecast {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.day-box {
+    background: #e3f3ff;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
 }
