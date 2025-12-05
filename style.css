@@ -5,17 +5,18 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 50px;
 }
 
 .container {
-    width: 350px;
+    width: 400px;
     background: #ffffff;
     padding: 20px;
     text-align: center;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 input {
@@ -24,29 +25,53 @@ input {
     margin-bottom: 10px;
     border: 2px solid #007bff;
     border-radius: 8px;
+    outline: none;
 }
 
 button {
-    padding: 10px;
+    padding: 10px 20px;
     background-color: #007bff;
     color: #ffffff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    margin-bottom: 20px;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-.forecast {
-    margin-top: 20px;
-    font-size: 14px;
+#forecast {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.day-box {
-    background: #e3f3ff;
-    padding: 10px;
-    border-radius: 6px;
-    margin-top: 10px;
+.day-card {
+    background: linear-gradient(to right, #e3f3ff, #ffffff);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    text-align: center;
+    transition: transform 0.2s;
 }
+
+.day-card:hover {
+    transform: translateY(-5px);
+}
+
+.day-card h4 {
+    margin: 5px 0;
+}
+
+.temp {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.weather-code {
+    font-size: 14px;
+    color: #555;
+}
+
