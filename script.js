@@ -1,129 +1,77 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #a8d8ff;
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-}
+async function loadWeather() {
+    const city = cityInput.value.trim();
+    const container = document.getElementById("weatherContainer");
 
-h2 {
-    margin-bottom: 10px;
-}
+    if (!city) return alert("Please enter a city name!");
 
-input {
-    padding: 10px;
-    width: 250px;
-    border-radius: 8px;
-    border: 2px solid #007bff;
-    outline: none;
-    margin-right: 5px;
-}
+    container.innerHTML = "Loading...";
 
-button {
-    padding: 10px 15px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
+    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`);
+    const geoData = await geoRes.json();
 
-button:hover {
-    background: #0056b3;
-}
+    if (!geoData.results) {
+        container.innerHTML = "City not found!";
+        return;
+    }
 
-.weather-container {
-    margin-top: 25px;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
+    const { latitude, longitude } = geoData.results[0];
 
-.weather-card {
-    width: 180px;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    color: #222;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    position: relative;
-    overflow: hidden;
-}
+    const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=7`
+    );
+    const data = await res.json();
 
-/* ☀️ Sunny animation */
-.sunny-card {
-    background: #FFEBA1;
-    animation: sunnyGlow 1s infinite alternate;
-}
+    container.innerHTML = "";
 
-@keyframes sunnyGlow {
-    0% { box-shadow: 0 0 0px #f7d76a; }
-    100% { box-shadow: 0 0 25px #f7d76a; }
-}
+    const days = data.daily.time;
+    const maxT = data.daily.temperature_2m_max;
+    const minT = data.daily.temperature_2m_min;
+    const codes = data.daily.weathercode;
 
-/* 🌧 Rainy effect */
-.rainy-card {
-    background: #a6c8ff;
-}
+    days.forEach((day, i) => {
+        let card = document.createElement("div");
+        card.classList.add("weather-card");
 
-.rain {
-    position: absolute;
-    top: -10px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
+        const code = codes[i];
+        let type = "Cloudy";
+        let icon = "https://cdn-icons-png.flaticon.com/512/414/414825.png";
 
-.drop {
-    width: 2px;
-    height: 10px;
-    background: #0077ff;
-    position: absolute;
-    bottom: 100%;
-    animation: rain 0.5s linear infinite;
-}
+        if (code === 0) {
+            type = "Sunny";
+            icon = "https://cdn-icons-png.flaticon.com/512/869/869869.png";
+            card.classList.add("sunny-card");
+        } 
+        else if ([51,53,55,61,63,65,80,81,82].includes(code)) {
+            type = "Rainy";
+            icon = "https://cdn-icons-png.flaticon.com/512/1163/1163624.png";
+            card.classList.add("rainy-card");
+        } 
+        else {
+            type = "Cloudy";
+            card.classList.add("cloudy-card");
+        }
 
-@keyframes rain {
-    to { transform: translateY(130px); }
-}
+        card.innerHTML = `
+            <h3>${day}</h3>
+            <img src="${icon}" width="60">
+            <p class="temp">${maxT[i]}°C</p>
+            <p class="minmax">${minT[i]}°C</p>
+        `;
 
-/* ☁ Cloudy effect */
-.cloudy-card {
-    background: #c7c7c7;
-}
+        if (type === "Rainy") {
+            const rain = document.createElement("div");
+            rain.classList.add("rain");
+            for (let j = 0; j < 20; j++) {
+                let drop = document.createElement("div");
+                drop.classList.add("drop");
+                drop.style.left = Math.random() * 160 + "px";
+                drop.style.animationDelay = Math.random() * 1 + "s";
+                rain.appendChild(drop);
+            }
+            card.appendChild(rain);
+        }
 
-.cloudy-card::before,
-.cloudy-card::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 70%);
-    filter: blur(25px);
-    animation: fogMove 8s linear infinite;
-}
-
-.cloudy-card::after {
-    opacity: 0.7;
-    animation-duration: 3s;
-    animation-delay: 1s;
-}
-
-@keyframes fogMove {
-    to { transform: translateX(50%); }
-}
-
-.temp {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.minmax {
-    font-size: 14px;
-    opacity: 0.8;
+        container.appendChild(card);
+    });
 }
 
