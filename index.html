@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weather Forecast App</title>
+<title>7-Day Weather Forecast</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h2>7-Day Weather Forecast</h2>
-    <input type="text" id="cityInput" placeholder="Enter City Name">
-    <button id="getForecastBtn">Get Forecast</button>
+<h2>7-Day Weather Forecast</h2>
+<input type="text" id="cityInput" placeholder="Enter City Name">
+<button onclick="loadWeather()">Get Forecast</button>
 
-    <div id="forecast"></div>
-</div>
+<div class="weather-container" id="weatherContainer"></div>
 
 <script src="script.js"></script>
 </body>
 </html>
+
