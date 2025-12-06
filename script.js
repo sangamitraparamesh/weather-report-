@@ -1,56 +1,129 @@
-document.getElementById("getForecastBtn").addEventListener("click", loadWeather);
-
-async function loadWeather() {
-    const city = document.getElementById("cityInput").value.trim();
-    const forecastEl = document.getElementById("forecast");
-
-    if (city === "") {
-        alert("Please enter a city name!");
-        return;
-    }
-
-    forecastEl.innerHTML = "Loading...";
-
-    try {
-        // Step 1: Get location coordinates
-        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`;
-        const geoRes = await fetch(geoUrl);
-        const geoData = await geoRes.json();
-
-        if (!geoData.results || geoData.results.length === 0) {
-            forecastEl.innerHTML = "City not found!";
-            return;
-        }
-
-        const { latitude, longitude, name, country } = geoData.results[0];
-
-        // Step 2: Fetch forecast using coordinates
-        const forecastUrl =
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-            `&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=7`;
-
-        const weatherRes = await fetch(forecastUrl);
-        const weatherData = await weatherRes.json();
-
-        const days = weatherData.daily.time;
-        const maxTemp = weatherData.daily.temperature_2m_max;
-        const minTemp = weatherData.daily.temperature_2m_min;
-        const codes = weatherData.daily.weathercode;
-
-        forecastEl.innerHTML = `<h3>${name}, ${country}</h3>`;
-
-        days.forEach((day, i) => {
-            const card = document.createElement("div");
-            card.className = "day-card";
-            card.innerHTML = `
-                <h4>${day}</h4>
-                <div class="temp">🌡 Max: ${maxTemp[i]}°C | Min: ${minTemp[i]}°C</div>
-                <div class="weather-code">Weather Code: ${codes[i]}</div>
-            `;
-            forecastEl.appendChild(card);
-        });
-    } catch (error) {
-        forecastEl.innerHTML = "Error fetching weather data!";
-        console.error(error);
-    }
+body {
+    font-family: Arial, sans-serif;
+    background: #a8d8ff;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
 }
+
+h2 {
+    margin-bottom: 10px;
+}
+
+input {
+    padding: 10px;
+    width: 250px;
+    border-radius: 8px;
+    border: 2px solid #007bff;
+    outline: none;
+    margin-right: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.weather-container {
+    margin-top: 25px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.weather-card {
+    width: 180px;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    color: #222;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ☀️ Sunny animation */
+.sunny-card {
+    background: #FFEBA1;
+    animation: sunnyGlow 1s infinite alternate;
+}
+
+@keyframes sunnyGlow {
+    0% { box-shadow: 0 0 0px #f7d76a; }
+    100% { box-shadow: 0 0 25px #f7d76a; }
+}
+
+/* 🌧 Rainy effect */
+.rainy-card {
+    background: #a6c8ff;
+}
+
+.rain {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.drop {
+    width: 2px;
+    height: 10px;
+    background: #0077ff;
+    position: absolute;
+    bottom: 100%;
+    animation: rain 0.5s linear infinite;
+}
+
+@keyframes rain {
+    to { transform: translateY(130px); }
+}
+
+/* ☁ Cloudy effect */
+.cloudy-card {
+    background: #c7c7c7;
+}
+
+.cloudy-card::before,
+.cloudy-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 70%);
+    filter: blur(25px);
+    animation: fogMove 8s linear infinite;
+}
+
+.cloudy-card::after {
+    opacity: 0.7;
+    animation-duration: 3s;
+    animation-delay: 1s;
+}
+
+@keyframes fogMove {
+    to { transform: translateX(50%); }
+}
+
+.temp {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.minmax {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
