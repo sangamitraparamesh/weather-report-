@@ -1,6 +1,5 @@
 # weather-report-
-https://sangamitraparamesh.github.io/prodigy-wd-05/
----
+https://sangamitraparamesh.github.io/weatherforecast/
 
 # 7-Day Weather Forecast App
 
